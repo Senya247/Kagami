@@ -2,14 +2,20 @@ cmake_minimum_required(VERSION 3.5)
 
 project("TCP Keyboard")
 
-set(SOURCES
-	src/main.c
+set(CLIENT_SOURCES
+	src/client/helper.c
 )
 
-add_executable(prog ${SOURCES})
+set (SERVER_SOURCES
+	src/server/main.c
+	src/server/helper.c
+)
 
-target_include_directories(prog PRIVATE /usr/include/libevdev-1.0/)
+add_executable(client ${CLIENT_SOURCES})
+add_executable(server ${SERVER_SOURCES})
 
-find_library(LIBEVDEV_LIB libevdev HINTS /usr/lib/x86_64-linux-gnu/)
+target_include_directories(server PRIVATE /usr/include/libevdev-1.0/)
+target_include_directories(client PRIVATE /usr/include/libevdev-1.0/)
 
-target_link_libraries(prog PRIVATE LIBEVDEV_LIB)
+target_link_libraries(server PRIVATE evdev)
+target_link_libraries(client PRIVATE evdev)
