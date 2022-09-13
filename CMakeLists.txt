@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project("TCP Keyboard")
+project("Kagami")
 
 set(CLIENT_SOURCES
 	src/client/helper.c
