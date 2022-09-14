@@ -2,11 +2,14 @@ cmake_minimum_required(VERSION 3.5)
 
 project("Kagami")
 
-set(CLIENT_SOURCES
+file(GLOB CLIENT_SOURCES
+	src/common/*
+	src/client/main.c
 	src/client/helper.c
 )
 
-set (SERVER_SOURCES
+file (GLOB SERVER_SOURCES
+	src/common/*
 	src/server/main.c
 	src/server/helper.c
 )
