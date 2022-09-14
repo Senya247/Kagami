@@ -1,5 +1,7 @@
 #include "../../include/common/err.h"
 #include "../../include/common/event.h"
+#include "../../include/common/net.h"
+#include "../../include/server/helper.h"
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -23,10 +25,6 @@ struct sockaddr_in server;
 
 const char *keyboard_path = "/dev/input/event3";
 
-int socket_create(int port);
-void socket_bind(int sockfd, int port);
-void socket_listen(int sockfd, int backlog);
-
 int main(void) {
     int err;
     struct libevdev *keyboard;
@@ -48,12 +46,13 @@ int main(void) {
         accept(server_sockfd, (struct sockaddr *)&client_addr, &len);
     fprintf(stdout, "Connected to %s\n", inet_ntoa(client_addr.sin_addr));
 
-    struct input_event inp_ev;
-    while (!device_read_event(keyboard, &inp_ev)) {
-        printf("Event: %s %s %d\n", libevdev_event_type_get_name(inp_ev.type),
-               libevdev_event_code_get_name(inp_ev.type, inp_ev.code),
-               inp_ev.value);
-        err = write(client_sockfd, &inp_ev, sizeof(inp_ev));
+    struct input_event keyboard_ev, mouse_ev;
+    while (!device_read_event(keyboard, &keyboard_ev)) {
+        printf("Event: %s %s %d\n",
+               libevdev_event_type_get_name(keyboard_ev.type),
+               libevdev_event_code_get_name(keyboard_ev.type, keyboard_ev.code),
+               keyboard_ev.value);
+        err = write(client_sockfd, &keyboard_ev, sizeof(keyboard_ev));
         if (err == -1)
             error_exit(errno);
     }
