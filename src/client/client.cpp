@@ -1,8 +1,11 @@
 #include "../../include/client/client.hpp"
 #include "../../include/dev.hpp"
+#include "../../include/err.h"
 #include "../../include/net.hpp"
 #include "libevdev/libevdev-uinput.h"
 
+#include <cstdio>
+#include <iostream>
 #include <linux/input.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -49,20 +52,45 @@ int Client::hint_receive(struct hint_header *hint) {
 }
 
 int Client::hint_parse(struct hint_header *hint) {
+    int ret;
+
     switch (hint->hint) {
     case K_HINTS_EVNEW: {
-        static struct r_input_event event;
-        event_receive(&event);
-        event_run(&event);
+        struct r_input_event event;
+
+        ret = event_receive(&event);
+        if (ret != sizeof(event))
+            error_exit(errno);
+
+        if (event_run(&event) < 0)
+            error_exit(errno);
         break;
     }
 
     case K_HINTS_DEVNEW: {
         struct Device::dev_info dev_info;
-        device_receive(&dev_info);
+
+        ret = device_receive(&dev_info);
+        if (ret != sizeof(dev_info))
+            error_exit(errno);
+
+        std::cout << "new device " << dev_info.name << std::endl;
+
+        /* int event, code;
+        for (event = 0; event < EV_MAX; event++) {
+            if (test_bit(event, dev_info.event_info)) {
+                printf("Event type: %d\n", event);
+                for (code = 0; code < KEY_MAX; code++) {
+                    if (test_bit(code, dev_info.code_info[event]))
+                        printf("  Code: %d\n", code);
+                }
+            }
+        } */
 
         Device n_dev;
-        n_dev.init_uinput(&dev_info);
+        if (n_dev.init_uinput(&dev_info) < 0)
+            error_exit(errno);
+        std::cout << "initialized uinput for id " << dev_info.id << std::endl;
 
         _devices.push_back(n_dev);
         break;
@@ -71,7 +99,6 @@ int Client::hint_parse(struct hint_header *hint) {
     default:
         break;
     }
-
     return 0;
 }
 
@@ -84,11 +111,16 @@ int Client::device_receive(struct Device::dev_info *dev_info) {
 }
 
 int Client::event_run(const struct r_input_event *event) {
+    /* I commented this out before, can't remember why, might be somethign to
+     * look into */
+    /* if (event->event.type == 0x4 && event->event.code == 0x4)
+        return 0; */
     for (auto &device : _devices) {
         if (device.id() == event->id) {
             return device.event_run(&(event->event));
         }
     }
+    fprintf(stderr, "No device of id %d\n", event->id);
     return -1;
 }
 

@@ -51,18 +51,17 @@ class Device {
   private:
     int _fd = -1;
     int _id = -1;
-    struct dev_info _info;
+    struct dev_info _info = {0};
 
     std::string _name;
     std::string _path;
 
-    struct libevdev *_dev;
     struct libevdev_uinput *_uinput; /* only used if this device is a uinput
                                        device, not a real one */
 
   public:
-    ~Device();
-
+    // TODO move me to private
+    struct libevdev *_dev;
     int init(const std::string path, int id);
     int init_uinput(struct dev_info *dev_info);
 
@@ -77,6 +76,8 @@ class Device {
     int event_run(const struct input_event *event); /* only for uinput */
 
     int uinput_create();
+
+    int dev_info(struct dev_info *info);
 };
 
 } // namespace Kagami

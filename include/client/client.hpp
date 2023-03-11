@@ -15,7 +15,7 @@ class Client {
     std::vector<Device> _devices; /* uinput devices */
 
   public:
-    Client(int port = 34567) : _port(port){};
+    Client(int port = 34924) : _port(port){};
 
     int sockfd() { return _socket_fd; };
     int port() { return _port; };

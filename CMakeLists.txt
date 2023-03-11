@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project("Kagami")
 
+
 file (GLOB SOURCES
 	main.cpp
 	src/*.cpp
@@ -11,7 +12,9 @@ file (GLOB SOURCES
 
 
 add_executable(kagami ${SOURCES})
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
+
+add_compile_options(/W4 /WX)
 
 target_include_directories(kagami PRIVATE /usr/include/libevdev-1.0/)
 
