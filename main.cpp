@@ -27,6 +27,7 @@ int run_server() {
 
     const std::vector<std::string> paths = {
         "/dev/input/event3",
+        "/dev/input/event5",
     };
 
     Kagami::Server server(34924);
@@ -41,18 +42,18 @@ int run_server() {
     if (server.poll_init() < 0)
         error_exit(errno);
 
-    std::vector<Kagami::Device *> devs;
+    std::vector<Kagami::Device *> ready_to_read;
     struct Kagami::r_input_event inp_ev;
     do {
-        devs = server.poll_devices();
-        for (const auto device : devs) {
+        server.poll_devices(ready_to_read);
+        for (const auto device : ready_to_read) {
             device->event_read(&inp_ev);
-            printf("type: %d code: %d value: %d\n", inp_ev.event.type,
-                   inp_ev.event.code, inp_ev.event.value);
+            printf("Event: %s %s %d\n", libevdev_event_type_get_name(inp_ev.event.type),
+                   libevdev_event_code_get_name(inp_ev.event.type, inp_ev.event.code), inp_ev.event.value);
             if (server.event_write(&inp_ev) < 0)
                 error_exit(errno);
         }
-    } while (devs.size());
+    } while (server.clients_num());
     puts("end");
 
     return 0;
@@ -64,7 +65,7 @@ int run_client() {
     Kagami::Client client;
 
     client.socket_init();
-    if (client.socket_connect("192.168.156.166") < 0) {
+    if (client.socket_connect("100.100.173.124") < 0) {
         printf("error: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     }

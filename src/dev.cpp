@@ -76,7 +76,7 @@ int Device::init_uinput(struct dev_info *dev_info) {
             for (code = 0; code < KEY_MAX; code++) {
                 if (test_bit(code, _info.code_info[event])) {
                     std::cout << "enabling event code " << code << std::endl;
-                    if (libevdev_enable_event_code(_dev, event, code, NULL) !=
+                    if (libevdev_enable_event_code(_dev, event, code, NULL) ==
                         -1)
                         error_exit(errno);
                 }

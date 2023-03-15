@@ -18,6 +18,7 @@
 #include <thread>
 #include <unistd.h>
 #include <vector>
+#include <sys/select.h>
 
 namespace Kagami {
 
@@ -139,16 +140,12 @@ int Server::poll_init() {
         }
     }
 
-    for (int i = 0; i < len; i++) {
-    }
-
     return 0;
 }
 
 /* return pointer to device in which the event occured */
-std::vector<Device *> Server::poll_devices() {
+int Server::poll_devices(std::vector<Device *>& device_list){
     int len, err, num_open_fds;
-    std::vector<Device *> ret;
 
     len = dev_num();
     num_open_fds = dev_num();
@@ -160,15 +157,14 @@ std::vector<Device *> Server::poll_devices() {
     for (int i = 0; i < len; i++) {
         if (_pollfds[i].revents & POLLIN) { /* ready to read */
             /* std::cout << "activity in " << _pollfds[i].fd << std::endl; */
-            ret.push_back(&(_devices[i]));
+            device_list.push_back(&(_devices[i]));
         }
     }
-    return ret;
+    return 0;
 
 error:
-    error_exit(errno);
     free(_pollfds);
-    return ret;
+    error_exit(errno);
 }
 
 int Server::accept_clients(int *res) {

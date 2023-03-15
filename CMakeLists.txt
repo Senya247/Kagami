@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project("Kagami")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file (GLOB SOURCES
 	main.cpp
@@ -9,7 +10,6 @@ file (GLOB SOURCES
 	src/server/*.cpp
 	src/client/*.cpp
 )
-
 
 add_executable(kagami ${SOURCES})
 # set(CMAKE_BUILD_TYPE Debug)

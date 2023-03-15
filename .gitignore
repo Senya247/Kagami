@@ -2,3 +2,4 @@ build/
 old_testing/
 compile_commands.json
 .cache
+copy.sh

@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+
 namespace Kagami {
 
 int Client::socket_init() {
@@ -103,11 +104,11 @@ int Client::hint_parse(struct hint_header *hint) {
 }
 
 int Client::event_receive(struct r_input_event *event) {
-    return read(_socket_fd, event, sizeof(*event));
+    return Net::read_all(_socket_fd, event, sizeof(*event));
 }
 
 int Client::device_receive(struct Device::dev_info *dev_info) {
-    return read(_socket_fd, dev_info, sizeof(*dev_info));
+    return Net::read_all(_socket_fd, dev_info, sizeof(*dev_info));
 }
 
 int Client::event_run(const struct r_input_event *event) {

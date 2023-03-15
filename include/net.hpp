@@ -13,6 +13,8 @@ struct hint_header {
 namespace Net {
 
 int addr_create(std::string ip, int port, struct sockaddr_in *address);
+size_t write_all(int s, void *buf, size_t len);
+size_t read_all(int s, void *buf, size_t len);
 
 } // namespace Net
 

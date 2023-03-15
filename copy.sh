@@ -2,7 +2,7 @@
 # copy prog over to another computer
 
 
-USER=rritu
+USER=raghav
 SERVER="192.168.1.58"
 
-scp -r "../Kagami" "$USER@$SERVER:~/Downloads/Kagami"
+rsync -avrP ~/Desktop/Kagami "envy:~/Desktop/"

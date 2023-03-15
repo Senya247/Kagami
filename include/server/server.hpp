@@ -34,8 +34,8 @@ class Server {
 
     std::vector<Client_ctx> _clients;
 
-  public:
     std::vector<Device> _devices;
+  public:
     Server(int port = 34924) : _port(port){};
 
     int init_devices(const std::vector<std::string> dev_paths);
@@ -58,7 +58,7 @@ class Server {
         const struct r_input_event *event); /* send event to every client */
 
     int poll_init();
-    std::vector<Device *> poll_devices();
+    int poll_devices(std::vector<Device *>& device_list);
 };
 
 } // namespace Kagami
